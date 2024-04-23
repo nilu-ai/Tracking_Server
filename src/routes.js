@@ -9,11 +9,11 @@ router.route("/login/:name/:pass").get((req,res)=>{
     res.cookie("Token_cookies",token,{expires: new Date(Date.now() + 86400000)    })
     res.send("Cookiew are setted")
 })
-      
-
 router.route("/logout").get((req,res)=>{
     console.log("this calling");
-    res.send("You on login reques")
+    res.clearCookie("Token_cookies")
+    res.send("log out")
+
 })
 
 export default router;
