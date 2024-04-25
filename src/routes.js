@@ -17,6 +17,10 @@ router.route("/logout").get((req,res)=>{
     res.send("log out")
 })
 
+let  Events = [{"username":"Ipl", "price":112.34, "brand":"samsung"},
+{"username":"t20", "price": 345.34, "brand": "LG"},
+{"username":"world cup", "price": 3454.34, "brand": "Apple"}];
+
 const data = {
     "a": ["apple", "avocado"],
     "b": ["banana", "blueberry"],
@@ -44,31 +48,31 @@ const data = {
     "x": ["xigua", "ximenia"],
     "y": ["yuzu", "yumberry"],
     "z": ["zucchini", "zinfandel grape"]
-};
-
+}
 router.route("/recommedation/:name").get((req,res)=>{
     const check= req.params.name;
     let recommedation=data[check[0]]
     res.send(recommedation)
 })
-
 router.route("/cookies").get((req,res)=>{
     const cookieString=req.get("cookie")
     if(!cookieString){
         res.send("req autication")
     }
-
     const token = cookieString.substring('Token_cookies='.length);
     const privateKey="asdasdadsd326teyeqwd76q3teqw7e7q278e2ye8y7";
     const data=jwt.verify(token,privateKey);
     console.log(data);
     res.send(`Checking Your Cookies status and send the result:${cookieString} , UserName:${data.name} `)
 })
-
 router.route("/send/:message/:id").get(auth,(req,res)=>{
     res.send(req.params.message);
 })
 
+router.route("/:username").get((req,res)=>{
+    const username=req.params.username;
 
-
+    const data=Events.filter((ev)=>ev.username==username)
+    res.send(data)
+})
 export default router;
