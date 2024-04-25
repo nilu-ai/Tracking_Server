@@ -7,8 +7,9 @@ router.route("/login/:name/:pass").get((req,res)=>{
     console.log("this calling");
     const privateKey="asdasdadsd326teyeqwd76q3teqw7e7q278e2ye8y7";
     console.log(req.params);
-    const token=jwt.sign({ foo: req.params.pass }, privateKey);
-    res.cookie("Token_cookies",token,{expires: new Date(Date.now() + 86400000)    })
+    const token=jwt.sign({ name: req.params.name }, privateKey);
+    console.log(new Date(Date.now()));
+    res.cookie("Token_cookies",token,{expires: new Date(Date.now() + 10000)    })
     res.send("Cookiew are setted")
 })
 router.route("/logout").get((req,res)=>{
@@ -54,20 +55,21 @@ router.route("/recommedation/:name").get((req,res)=>{
 
 router.route("/cookies").get((req,res)=>{
     const cookieString=req.get("cookie")
+    if(!cookieString){
+        res.send("req autication")
+    }
+
     const token = cookieString.substring('Token_cookies='.length);
     const privateKey="asdasdadsd326teyeqwd76q3teqw7e7q278e2ye8y7";
-
-    const data=jwt.verify(token,privateKey)
+    const data=jwt.verify(token,privateKey);
     console.log(data);
-
-    res.send(`Checking Your Cookies status and send the result:${cookieString} , UserName:${data.foo} `)
+    res.send(`Checking Your Cookies status and send the result:${cookieString} , UserName:${data.name} `)
 })
 
 router.route("/send/:message/:id").get(auth,(req,res)=>{
-   
-    
-
     res.send(req.params.message);
 })
+
+
 
 export default router;
