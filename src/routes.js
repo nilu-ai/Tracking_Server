@@ -1,7 +1,6 @@
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 const router=Router()
-
 import auth from "./adminverify.js"
 router.route("/login/:name/:pass").get((req,res)=>{
     console.log("this calling");
@@ -9,7 +8,7 @@ router.route("/login/:name/:pass").get((req,res)=>{
     console.log(req.params);
     const token=jwt.sign({ name: req.params.name }, privateKey);
     console.log(new Date(Date.now()));
-    res.cookie("Token_cookies",token,{expires: new Date(Date.now() + 10000)    })
+    res.cookie("Token_cookies",token,{expires: new Date(Date.now() + 100000000)    })
     res.send("Cookiew are setted")
 })
 router.route("/logout").get((req,res)=>{
