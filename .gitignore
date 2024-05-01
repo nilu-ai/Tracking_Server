@@ -119,3 +119,5 @@ dist
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
 .DS_Store
+
+#mongodb+srv://nilesh:Sc8kXzLEL4DH4zk6@cluster0.hhxzxre.mongodb.net/live_tracing_app

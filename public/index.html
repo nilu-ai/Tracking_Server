@@ -1,0 +1,37 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Interface</title>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>User Interface</h1>
+  <div id="map"></div>
+
+  <script src="https://cdn.socket.io/4.3.1/socket.io.min.js"></script>
+  <script>
+    const socket = io(); // Connect to the server
+
+    socket.on('deliveryLocationUpdate', location => {
+      console.log('Received delivery boy location update:', location);
+      // Update the map with the delivery boy's location
+      updateMap(location);
+    });
+
+    function updateMap(location) {
+      // Your code to update the map with the delivery boy's location
+      // This is just a placeholder
+      const mapElement = document.getElementById('map');
+      mapElement.innerHTML = `Delivery Boy Location: Latitude ${location.latitude}, Longitude ${location.longitude}`;
+    }
+  </script>
+</body>
+</html>
