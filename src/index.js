@@ -1,3 +1,37 @@
+import { log } from "console";
+import express from "express";
+import http from "http"
+import path from "path";
+import { Server } from "socket.io";
+
+
+const app=express()
+const server =http.createServer(app)
+const io=new Server(server) //it will handle all requesyt
+//all rest request handle by the express app and socket req handle by the io
+
+app.use(express.static("public"))
+
+//jab bhi frontend se connection requestion ayegi toh ye call hoga
+//socket is alway the client ......
+io.on("connection",(socket)=>{
+  //socket content all user info 
+  socket.on("gps",(co)=>{
+    io.emit("gps",co)
+    console.log(co);
+  })
+  console.log("connected",socket.id);
+})
+
+
+
+app.get("/a",(req,res)=>{
+  return res.sendFile("/workspaces/Tracking_Server/public/index.html")
+})
+
+server.listen(9000,()=>{
+  console.log("started");
+})
 // import express from "express";
 // import jwt from "jsonwebtoken";
 // import cron from "node-cron"
@@ -21,45 +55,45 @@
 
 // server.js
 // server.js
-import express from 'express';
-import http from 'http';
-import { Server as SocketIO } from 'socket.io';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import jwt from 'jsonwebtoken';
+// import express from 'express';
+// import http from 'http';
+// import { Server as SocketIO } from 'socket.io';
+// import mongoose from 'mongoose';
+// import bodyParser from 'body-parser';
+// import jwt from 'jsonwebtoken';
 
-import User from './models/User.js';
-import Delivery from './models/Delivery.js';
-import cookieParser from 'cookie-parser';
-const app = express();
-const server = http.createServer(app);
-const io = new SocketIO(server);
+// import User from './models/User.js';
+// import Delivery from './models/Delivery.js';
+// import cookieParser from 'cookie-parser';
+// const app = express();
+// const server = http.createServer(app);
+// const io = new SocketIO(server);
 
-// Connect to MongoDB
-mongoose.connect('', { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
-  let deliveryBoyLocation = {
-    latitude: 0,
-    longitude: 0
-  };
+// // Connect to MongoDB
+// mongoose.connect('', { useNewUrlParser: true, useUnifiedTopology: true })
+//   .then(() => console.log('MongoDB Connected'))
+//   .catch(err => console.log(err));
+//   let deliveryBoyLocation = {
+//     latitude: 0,
+//     longitude: 0
+//   };
   
-  // Update delivery boy's coordinates every 1 second
-  setInterval(() => {
-    // Simulate changing coordinates
-    deliveryBoyLocation.latitude += 0.001;
-    deliveryBoyLocation.longitude += 0.001;
+//   // Update delivery boy's coordinates every 1 second
+//   setInterval(() => {
+//     // Simulate changing coordinates
+//     deliveryBoyLocation.latitude += 0.001;
+//     deliveryBoyLocation.longitude += 0.001;
   
-    // Emit updated coordinates to connected users
-    io.emit('deliveryLocationUpdate', deliveryBoyLocation);
-  }, 1000);
+//     // Emit updated coordinates to connected users
+//     io.emit('deliveryLocationUpdate', deliveryBoyLocation);
+//   }, 1000);
   
-  // Serve static files
-  app.use(express.static('public'));
+//   // Serve static files
+//   app.use(express.static('public'));
 
   
-  // Start the server
-  const PORT = process.env.PORT || 3000;
-  server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+//   // Start the server
+//   const PORT = process.env.PORT || 3000;
+//   server.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+//   });

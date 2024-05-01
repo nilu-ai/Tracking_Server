@@ -13,25 +13,31 @@
   </style>
 </head>
 <body>
-  <h1>User Interface</h1>
-  <div id="map"></div>
+  <h1>User Interfacesss</h1>
+  <input id="texts" type="text" placeholder="enter text"/>
+  <div id="allmsg"></div>
+ <button onclick="connected()">Connection</button>
+  <script src="/socket.io/socket.io.js">
 
-  <script src="https://cdn.socket.io/4.3.1/socket.io.min.js"></script>
-  <script>
-    const socket = io(); // Connect to the server
-
-    socket.on('deliveryLocationUpdate', location => {
-      console.log('Received delivery boy location update:', location);
-      // Update the map with the delivery boy's location
-      updateMap(location);
-    });
-
-    function updateMap(location) {
-      // Your code to update the map with the delivery boy's location
-      // This is just a placeholder
-      const mapElement = document.getElementById('map');
-      mapElement.innerHTML = `Delivery Boy Location: Latitude ${location.latitude}, Longitude ${location.longitude}`;
-    }
   </script>
+  <script>
+    const socket=new io()
+    const allmsg=document.getElementById("allmsg")
+function connected() {
+  
+  const msg=document.getElementById("texts").value;
+  //emit means send karo to setver
+  socket.emit("gps",msg)
+  console.log(msg);
+}
+socket.on("gps",(co)=>{
+  console.log("from server to client",co);
+  const np=document.createElement('p')
+  np.innerText=co;
+  allmsg.appendChild(np)
+ 
+})
+// const socket=new io()
+    </script>
 </body>
 </html>
