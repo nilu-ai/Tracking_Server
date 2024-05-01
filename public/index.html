@@ -13,7 +13,7 @@
   </style>
 </head>
 <body>
-  <h1>User Interfacesss</h1>
+  <h1>tracking</h1>
   <input id="texts" type="text" placeholder="enter text"/>
   <div id="allmsg"></div>
  <button onclick="connected()">Connection</button>
@@ -23,17 +23,31 @@
   <script>
     const socket=new io()
     const allmsg=document.getElementById("allmsg")
+    let allgps={}
+    
+    
+function showPosition(position) {
+    x.innerHTML="Latitude: " + position.coords.latitude + 
+    "<br>Longitude: " + position.coords.longitude;
+}
 function connected() {
-  
+ 
   const msg=document.getElementById("texts").value;
   //emit means send karo to setver
-  socket.emit("gps",msg)
+  navigator.geolocation.getCurrentPosition(function(location) {
+      allgps.latitude=location.coords.latitude;
+      allgps.longitude=location.coords.longitude;
+  // console.log(location.coords.latitude);
+  // console.log(location.coords.longitude);
+  // console.log(location.coords.accuracy);
+});
+  socket.emit("gps",{msg,allgps})
   console.log(msg);
 }
 socket.on("gps",(co)=>{
   console.log("from server to client",co);
   const np=document.createElement('p')
-  np.innerText=co;
+  np.innerText = `Latitude: ${co.allgps.latitude}, Longitude: ${co.allgps.longitude}`;
   allmsg.appendChild(np)
  
 })
