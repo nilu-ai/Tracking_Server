@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Interface</title>
+  <title>deliver Interface</title>
   <style>
     #map {
       height: 400px;
@@ -22,7 +22,7 @@
   <script>
     const socket=new io({query: {
         id: 'yourUserId',
-        role: 'USER',
+        role: 'Deliver',
         
     }})
     const allmsg=document.getElementById("allmsg")
@@ -42,7 +42,7 @@ function connected() {
   // console.log(location.coords.longitude);
   // console.log(location.coords.accuracy);
 });
-  socket.emit("gps",msg)
+  socket.emit("gps",{msg,allgps})
   console.log(msg);
 }
 socket.on("gps",(co)=>{
