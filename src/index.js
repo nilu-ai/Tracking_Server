@@ -59,8 +59,6 @@ io.on("connection",async(socket)=>{
 //  () => {
 //      console.log('disconnected from user');
 //  });
-
- 
   socket.on("gps",(co)=>{
     io.emit("gps",co)
     console.log(co);
@@ -77,8 +75,8 @@ app.get("/upload",(req,res)=>{
   return res.send(Secerate_token)
   // return res.send("The Data of Auth Token:",Auth)
 })
-
 import userRoutes from "./routes.js"
+
 app.use("/user",userRoutes)
 
 server.listen(9000,()=>{

@@ -28,7 +28,7 @@
   <h1 class="p-6 bg-black text-white font-bold  flex justify-center">tracking</h1>
 <div class="p-2">
 
-  <input class="m-auto flex justify-center" id="texts" type="text" placeholder="enter text"/>
+  <input class="m-auto flex justify-center" id="texts" type="text" placeholder="Enter Order ID:#."/>
 </div>
   <div id="allmsg">
     <p id="allmsgs"></p>
@@ -57,7 +57,7 @@ function disconnected(){
   //socket.emit('forcedisconnect')
 }
 function connected() {
- 
+  //socket.connect()
   const msg=document.getElementById("texts").value;
  
   navigator.geolocation.getCurrentPosition( function(location) {

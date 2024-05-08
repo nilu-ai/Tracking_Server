@@ -29,9 +29,9 @@
 <body>
   <h1 class="p-6 bg-black text-white font-bold  flex justify-center">User Tracking</h1>
   <div>
-    <input  id="texts" type="text" placeholder=""/>
+    <input  id="orderid" type="text" placeholder=""/>
     <div class="p-6 float-end">
-      <p class="p-2">Order id: #123123</p>
+      <p class="p-2">Order id: <span id="order_ID">#123123</span></p>
       <p class="p-2">Delivery details: <span class="font-bold">Status</span></p>
       <p class="p-2">Delivery Agent Name: X Y Z</p></div>
       
@@ -39,7 +39,7 @@
     <p id="newco"></p>
   </div>
  </div><div class="flex justify-center m-auto gap-4 mt-4"><button class=" bg-green-400 text-white rounded-md p-2"  onclick="connected()">Track The Order</button>
-  <button class=" bg-red-400 text-white rounded-md p-2">Stop Tracking</button><button onclick="getmap()" class=" bg-red-400 text-white rounded-md p-2">Stop Tracking</button></div>
+  <button onclick="disco()" class=" bg-red-400 text-white rounded-md p-2">Stop Tracking</button><button onclick="getmap()" class=" bg-red-400 text-white rounded-md p-2">Map</button></div>
   <script src="/socket.io/socket.io.js">
   </script>
   <script>
@@ -55,17 +55,24 @@
     x.innerHTML="Latitude: " + position.coords.latitude + 
     "<br>Longitude: " + position.coords.longitude;
 }
+function disco(){
+  console.log("disconnect");
+  socket.disconnect()
+}
 function connected() {
-  const msg=document.getElementById("texts").value;
+
+  const msg=document.getElementById("texts")?.value;
   //emit means send karo to setver
-  navigator.geolocation.getCurrentPosition(async function(location) {
-      allgps.latitude=await location.coords.latitude;
-      allgps.longitude=await location.coords.longitude;
-  // console.log(location.coords.latitude);
-  // console.log(location.coords.longitude);
-  // console.log(location.coords.accuracy);
-});
-  socket.emit("gps",msg)
+//   navigator.geolocation.getCurrentPosition(async function(location) {
+//       allgps.latitude=await location.coords.latitude;
+//       allgps.longitude=await location.coords.longitude;
+//   // console.log(location.coords.latitude);
+//   // console.log(location.coords.longitude);
+//   // console.log(location.coords.accuracy);
+// });
+//   socket.emit("gps",msg)
+//socket.emit("message",msg)
+socket.connect()
   console.log(msg);
 }
 
@@ -75,7 +82,9 @@ socket.on("gps",(co)=>{
   
   console.log("from server to client",co);
   //const np=document.createElement('p')
+  document.getElementById('order_ID').innerText=co.msg
   np.innerText =curr.getHours()+`:`+curr.getMinutes()+`:`+curr.getSeconds() +`: Latitude: ${co.allgps.latitude}, Longitude: ${co.allgps.longitude}`;
+
   allmsg.appendChild(np)
 })
 
