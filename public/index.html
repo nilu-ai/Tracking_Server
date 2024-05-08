@@ -11,12 +11,35 @@
       width: 100%;
     }
   </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: '#da373d',
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+
 </head>
 <body>
-  <h1>tracking</h1>
-  <input id="texts" type="text" placeholder="enter text"/>
-  <div id="allmsg"></div>
- <button onclick="connected()">Connection</button>
+  <h1 class="p-6 bg-black text-white font-bold  flex justify-center">User Tracking</h1>
+  <div>
+    <input  id="texts" type="text" placeholder=""/>
+    <div class="p-6 float-end">
+      <p class="p-2">Order id: #123123</p>
+      <p class="p-2">Delivery details: <span class="font-bold">Status</span></p>
+      <p class="p-2">Delivery Agent Name: X Y Z</p></div>
+      
+  <div id="allmsg">
+    <p id="newco"></p>
+  </div>
+ </div><div class="flex justify-center m-auto gap-4 mt-4"><button class=" bg-green-400 text-white rounded-md p-2"  onclick="connected()">Track The Order</button>
+  <button class=" bg-red-400 text-white rounded-md p-2">Stop Tracking</button><button onclick="getmap()" class=" bg-red-400 text-white rounded-md p-2">Stop Tracking</button></div>
   <script src="/socket.io/socket.io.js">
   </script>
   <script>
@@ -45,12 +68,18 @@ function connected() {
   socket.emit("gps",msg)
   console.log(msg);
 }
+
 socket.on("gps",(co)=>{
+  var curr=new Date()
+  const np=document.getElementById('newco')
+  
   console.log("from server to client",co);
-  const np=document.createElement('p')
-  np.innerText = `Latitude: ${co.allgps.latitude}, Longitude: ${co.allgps.longitude}`;
+  //const np=document.createElement('p')
+  np.innerText =curr.getHours()+`:`+curr.getMinutes()+`:`+curr.getSeconds() +`: Latitude: ${co.allgps.latitude}, Longitude: ${co.allgps.longitude}`;
   allmsg.appendChild(np)
 })
+
+
 // const socket=new io()
     </script>
 </body>

@@ -4,23 +4,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>deliver Interface</title>
+  <title>Deliver Interface</title>
   <style>
     #map {
       height: 400px;
       width: 100%;
     }
   </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: '#da373d',
+          }
+        }
+      }
+    }
+  </script>
 </head>
 <body>
-  <h1>tracking</h1>
-  <input id="texts" type="text" placeholder="enter text"/>
-  <div id="allmsg"></div>
- <button onclick="connected()">Connection</button>
+  <h1 class="p-6 bg-black text-white font-bold  flex justify-center">tracking</h1>
+<div class="p-2">
+
+  <input class="m-auto flex justify-center" id="texts" type="text" placeholder="enter text"/>
+</div>
+  <div id="allmsg">
+    <p id="allmsgs"></p>
+  </div>
+ <div class="flex justify-center m-auto gap-4 mt-4"><button class="  bg-green-400 text-white rounded-md p-2" onclick="connected()">Connection</button>
+  <button class="  bg-red-400 text-white rounded-md p-2" onclick="disconnected()">Disconnect</button></div>
   <script src="/socket.io/socket.io.js">
   </script>
   <script>
-    const socket=new io({query: {
+    var a;
+    var socket=new io({query: {
         id: 'yourUserId',
         role: 'Deliver',
         
@@ -28,30 +47,46 @@
     const allmsg=document.getElementById("allmsg")
     let allgps={}
     
- function showPosition(position) {
-    x.innerHTML="Latitude: " + position.coords.latitude + 
-    "<br>Longitude: " + position.coords.longitude;
+
+function disconnected(){
+  clearInterval(a);
+   console.log("hellow");
+  // socket.emit('disconnects')
+  socket.disconnect()
+  //socket.emit('disconnect')
+  //socket.emit('forcedisconnect')
 }
 function connected() {
+ 
   const msg=document.getElementById("texts").value;
-  //emit means send karo to setver
-  navigator.geolocation.getCurrentPosition(async function(location) {
-      allgps.latitude=await location.coords.latitude;
-      allgps.longitude=await location.coords.longitude;
+ 
+  navigator.geolocation.getCurrentPosition( function(location) {
+      allgps.latitude= location.coords.latitude;
+      allgps.longitude= location.coords.longitude;
   // console.log(location.coords.latitude);
   // console.log(location.coords.longitude);
   // console.log(location.coords.accuracy);
 });
-  socket.emit("gps",{msg,allgps})
+
+
   console.log(msg);
-}
+ var a=setInterval(() => {
+  socket.emit("gps",{msg,allgps})
+ }, 2000);
+
+//socket.emit("gps",{msg,allgps})
+
+} 
+
 socket.on("gps",(co)=>{
+  var currentDate = new Date();
   console.log("from server to client",co);
-  const np=document.createElement('p')
-  np.innerText = `Latitude: ${co.allgps.latitude}, Longitude: ${co.allgps.longitude}`;
+  // const np=document.createElement('p')
+  const np=document.getElementById('allmsgs')
+  np.innerText = `Sending The New Location :`+currentDate.getHours()+`:`+currentDate.getMinutes()+`:`+currentDate.getSeconds();
   allmsg.appendChild(np)
 })
-// const socket=new io()
+
     </script>
 </body>
 </html>
