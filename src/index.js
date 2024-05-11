@@ -59,6 +59,10 @@ io.on("connection",async(socket)=>{
 //  () => {
 //      console.log('disconnected from user');
 //  });
+
+  socket.on('disconnect',()=>{
+    console.log("Disconected succesfully");
+  })
   socket.on("gps",(co)=>{
     io.emit("gps",co)
     console.log(co);
