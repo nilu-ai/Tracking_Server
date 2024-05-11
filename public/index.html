@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <title>User Interface</title>
   <style>
     #map {
@@ -24,72 +26,93 @@
     }
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
-
 </head>
 <body>
-  <h1 class="p-6 bg-black text-white font-bold  flex justify-center">User Tracking</h1>
-  <div>
-    <input  id="orderid" type="text" placeholder=""/>
-    <div class="p-6 float-end">
-      <p class="p-2">Order id: <span id="order_ID">#123123</span></p>
-      <p class="p-2">Delivery details: <span class="font-bold">Status</span></p>
-      <p class="p-2">Delivery Agent Name: X Y Z</p></div>
-      
-  <div id="allmsg">
+  <h1 class="p-6 bg-black text-white font-bold flex justify-center">User Tracking</h1>
+  <div class="flex flex-col sm:flex-row justify-between">
+    <div class="p-2" id="allmsg">
+          <input id="orderid" type="text" placeholder=""/>
+
     <p id="newco"></p>
   </div>
- </div><div class="flex justify-center m-auto gap-4 mt-4"><button class=" bg-green-400 text-white rounded-md p-2"  onclick="connected()">Track The Order</button>
-  <button onclick="disco()" class=" bg-red-400 text-white rounded-md p-2">Stop Tracking</button><button onclick="getmap()" class=" bg-red-400 text-white rounded-md p-2">Map</button></div>
-  <script src="/socket.io/socket.io.js">
-  </script>
+    <div class="p-6 float-end">
+      <p class="p-2">Order id: <span id="order_ID" class="font-bold">#123123</span></p>
+      <p class="p-2">Delivery details: <span class="font-bold">Status</span></p>
+      <p class="p-2" >Delivery Agent Name: <span id="dname" class="font-bold" >X Y Z</span></p>
+    </div>
+  </div>
+  
+  <div class="flex flex-col gap-3 sm:flex-row justify-center">
+    <button class="bg-green-400 min-w-36 place-self-center text-white rounded-md p-2" onclick="connected()">Track The Order</button>
+    <button onclick="disco()" class="bg-red-400 min-w-36 place-self-center text-white rounded-md p-2">Stop Tracking</button>
+    <button onclick="getmap()" class="bg-red-400 min-w-36 place-self-center text-white rounded-md p-2">Map</button>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <div id="map" class="mt-2" style="height: 400px;"></div>
+
   <script>
-    const socket=new io({query: {
+    const socket = new io({
+      query: {
         id: 'yourUserId',
         role: 'USER',
-        
-    }})
-    const allmsg=document.getElementById("allmsg")
-    let allgps={}
-    
- function showPosition(position) {
-    x.innerHTML="Latitude: " + position.coords.latitude + 
-    "<br>Longitude: " + position.coords.longitude;
-}
-function disco(){
-  console.log("disconnect");
-  socket.disconnect()
-}
-function connected() {
+      }
+    });
+    var lat;
+    var long;
+    const allmsg = document.getElementById("allmsg");
+    let allgps = {};
 
-  const msg=document.getElementById("texts")?.value;
-  //emit means send karo to setver
-//   navigator.geolocation.getCurrentPosition(async function(location) {
-//       allgps.latitude=await location.coords.latitude;
-//       allgps.longitude=await location.coords.longitude;
-//   // console.log(location.coords.latitude);
-//   // console.log(location.coords.longitude);
-//   // console.log(location.coords.accuracy);
-// });
-//   socket.emit("gps",msg)
-//socket.emit("message",msg)
-socket.connect()
-  console.log(msg);
-}
+    function showPosition(position) {
+      x.innerHTML="Latitude: " + position.coords.latitude + 
+      "<br>Longitude: " + position.coords.longitude;
+    }
 
-socket.on("gps",(co)=>{
-  var curr=new Date()
-  const np=document.getElementById('newco')
-  
-  console.log("from server to client",co);
-  //const np=document.createElement('p')
-  document.getElementById('order_ID').innerText=co.msg
-  np.innerText =curr.getHours()+`:`+curr.getMinutes()+`:`+curr.getSeconds() +`: Latitude: ${co.allgps.latitude}, Longitude: ${co.allgps.longitude}`;
+    function disco() {
+      console.log("disconnect");
+      socket.disconnect();
+    }
+    var map = L.map('map').setView([0, 0], 13); 
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+    function connected() {
+      const msg = document.getElementById("texts")?.value;
 
-  allmsg.appendChild(np)
-})
+      socket.connect();
+      console.log(msg);
+    }
+
+    socket.on("gps", (co) => {
+      var curr = new Date();
+      const np = document.getElementById('newco');
+
+      console.log("from server to client", co);
+      document.getElementById('order_ID').innerText = co.msg.id;
+      document.getElementById('dname').innerText = co.msg.name;
+      np.innerText = curr.getHours() + `:` + curr.getMinutes() + `:` + curr.getSeconds() + `: Latitude: ${co.allgps.latitude}, Longitude: ${co.allgps.longitude}`;
+      lat=co.allgps.latitude;
+      long=co.allgps.longitude;
+      console.log(co.allgps.latitude, co.allgps.longitude);
+      getmap(co.allgps.latitude, co.allgps.longitude)
+ 
+      map.setView([co.allgps.latitude, co.allgps.longitude], 13);
+  if (typeof marker === 'undefined') {
+    marker = L.marker([co.allgps.latitude, co.allgps.longitude]).addTo(map)
+      .bindPopup('Live Location of your Item')
+      .openPopup();
+  } else {
+    marker.setLatLng([co.allgps.latitude, co.allgps.longitude]).update();
+  }
+      allmsg.appendChild(np);
+    });
+
+    function getmap() {
+      
+    }
 
 
-// const socket=new io()
-    </script>
+  </script>
+
+
 </body>
 </html>

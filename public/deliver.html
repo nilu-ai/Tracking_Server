@@ -25,68 +25,60 @@
   </script>
 </head>
 <body>
-  <h1 class="p-6 bg-black text-white font-bold  flex justify-center">tracking</h1>
-<div class="p-2">
-
-  <input class="m-auto flex justify-center" id="texts" type="text" placeholder="Enter Order ID:#."/>
-</div>
+  <h1 class="p-6 bg-black text-white font-bold flex justify-center">tracking</h1>
+  <div class="p-2">
+    <input class="m-auto flex justify-center" id="texts" type="text" placeholder="Enter Order ID:#."/>
+    <input class="m-auto flex justify-center" id="dname" type="text" placeholder="Enter Order ID:#."/>
+  </div>
   <div id="allmsg">
     <p id="allmsgs"></p>
   </div>
- <div class="flex justify-center m-auto gap-4 mt-4"><button class="  bg-green-400 text-white rounded-md p-2" onclick="connected()">Connection</button>
-  <button class="  bg-red-400 text-white rounded-md p-2" onclick="disconnected()">Disconnect</button></div>
-  <script src="/socket.io/socket.io.js">
-  </script>
+  <div class="flex justify-center m-auto gap-4 mt-4">
+    <button class="bg-green-400 text-white rounded-md p-2" onclick="connected()">Connection</button>
+    <button class="bg-red-400 text-white rounded-md p-2" onclick="disconnected()">Disconnect</button>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     var a;
-    var socket=new io({query: {
+    var socket;
+    const allmsg = document.getElementById("allmsg");
+    let allgps = {};
+
+    function disconnected() {
+      clearInterval(a);
+      console.log("hello");
+      socket.disconnect();
+      alert("Succesfully DisConnected")
+    }
+
+    function connected() {
+      socket = new io({
+      query: {
         id: 'yourUserId',
         role: 'Deliver',
-        
-    }})
-    const allmsg=document.getElementById("allmsg")
-    let allgps={}
-    
+      }
+    });
+      const msg = {'id': document.getElementById("texts").value, 'name': document.getElementById("dname").value};
 
-function disconnected(){
-  clearInterval(a);
-   console.log("hellow");
-  // socket.emit('disconnects')
-  socket.disconnect()
-  //socket.emit('disconnect')
-  //socket.emit('forcedisconnect')
-}
-function connected() {
-  //socket.connect()
-  const msg=document.getElementById("texts").value;
- 
-  navigator.geolocation.getCurrentPosition( function(location) {
-      allgps.latitude= location.coords.latitude;
-      allgps.longitude= location.coords.longitude;
-  // console.log(location.coords.latitude);
-  // console.log(location.coords.longitude);
-  // console.log(location.coords.accuracy);
-});
+      navigator.geolocation.getCurrentPosition(function(location) {
+        allgps.latitude = location.coords.latitude;
+        allgps.longitude = location.coords.longitude;
+      });
 
+      console.log(msg);
+      a = setInterval(() => {
+        socket.emit("gps", {msg, allgps});
+      }, 2000);
+      alert("Succesfully Connected")
+    }
 
-  console.log(msg);
- var a=setInterval(() => {
-  socket.emit("gps",{msg,allgps})
- }, 2000);
-
-//socket.emit("gps",{msg,allgps})
-
-} 
-
-socket.on("gps",(co)=>{
-  var currentDate = new Date();
-  console.log("from server to client",co);
-  // const np=document.createElement('p')
-  const np=document.getElementById('allmsgs')
-  np.innerText = `Sending The New Location :`+currentDate.getHours()+`:`+currentDate.getMinutes()+`:`+currentDate.getSeconds();
-  allmsg.appendChild(np)
-})
-
-    </script>
+    socket.on("gps", (co) => {
+      var currentDate = new Date();
+      console.log("from server to client", co);
+      const np = document.getElementById('allmsgs');
+      np.innerText = `Sending The New Location :` + currentDate.getHours() + `:` + currentDate.getMinutes() + `:` + currentDate.getSeconds();
+      allmsg.appendChild(np);
+    });
+  </script>
 </body>
 </html>
